@@ -14,7 +14,6 @@ int LAYOUT_ID = 0;
 int THREADS = 100;
 int BLOCKSIZE = 0;
 char *FILENAME;
-char *BENCH_TYPE;
 
 
 void disk_read (char *filename, int threads, int block_size);
@@ -76,7 +75,7 @@ unsigned long rand_interval(unsigned long min, unsigned long max)
 
 void disk_read (char *filename, int threads, int block_size){
 	
-	double total_latency=0, avg_total_latency;
+	double total_latency=0, latency=0, avg_total_latency;
 	struct timeval  start, end;
 	int i =0;
     char buf[block_size];
@@ -111,8 +110,10 @@ void disk_read (char *filename, int threads, int block_size){
     	gettimeofday(&start, NULL);
         ret = pread64(fd, buf, count, offset);
         gettimeofday(&end, NULL);
-        total_latency += ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
-        fprintf(fp, "%.0f\n", total_latency);
+        latency = ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
+        total_latency += latency;
+        fprintf(fp, "%.0f\n", latency);
+        close(fd);
     //printf("%s\n", buf );
     }
     fclose(fp);
@@ -158,6 +159,7 @@ void memory_read (char *filename, int threads, int block_size){
         arr_of_read_latency[i] = ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
     //printf("%s\n", buf );
     }
+    close(fd);
     average_latency = avg_latency(arr_of_read_latency, threads);
     
     printf("\n####### Reading process in-memory#######");

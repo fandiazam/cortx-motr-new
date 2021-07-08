@@ -222,12 +222,13 @@
     2.1 On-disk & In-memory
         #Generate large file/dataset ->10 GB
             #dd if=/dev/urandom of=10GB.txt bs=1073741824 count=10
-            while true;do head /dev/urandom | tr -dc A-Za-z0-9;done | head -c 1073741824 | tee  1GB.txt
 
-            for i in {1..10}; 
-                do cat 1GB.txt >> 10GB.txt
+            while true;do head /dev/urandom | tr -dc A-Za-z0-9;done | head -c 1048576 | tee  1MB.txt //1 MB
+            for i in {1..10240}; 
+                do cat 1MB.txt >> 10GB.txt
             done
-            rm -f 1GB.txt
+            rm -f 1MB.txt
+
         #RUN
         cd mnt/extra/cortx-motr/OS_benchmarking/
 
@@ -235,7 +236,7 @@
         gcc -o OS_bench OS_bench.c;
 
         #[object file] [blocksize: 1 -> 4096 B] [dataset name] [N_Request]
-        sudo ./OS_bench 1 10GB.txt 1000
+        sudo ./OS_bench 1 10GBreal.txt 1000
 
 
 3. Cortx Benchmarking :
