@@ -203,14 +203,7 @@
     sudo chown $USER -R /mnt
     cd /mnt/extra/cortx-motr/
 
-    # For benchmarking, make sure cortx doesn't have any overhead
-
-        # https://cortxcommunity.slack.com/archives/C019S0SGWNQ/p1607974535256000
-        # ./configure --disable-expensive-checks
-        # ./configure --disable-immediate-trace
-        # ./configure --disable-dev-mode
-        # ./configure --help | grep trace
-
+    # For benchmarking, 
     ./scripts/m0 rebuild
 
 ====================================================================
@@ -239,8 +232,11 @@
         sudo ./OS_bench 1 10GB.txt 1000
 
 
-3. Cortx Tracing method & Benchmarking :
-    3.1 On-disk
+3. Cortx Benchmarking :
+
+    3.0 Follow step 4.1 then 4.3 for setup and rebuild
+
+    3.1 On-disk benchmarking
         cd /mnt/extra/cortx-motr/motr/examples
         zsh
         sudo su
@@ -251,19 +247,21 @@
             -L/mnt/extra/cortx-motr/motr/.libs -lmotr  -lpthread            \
             example_mt_bench_disk.c -o example_mt_bench_disk
         
-        #Write Request (write 40 MB for test only; if real benchmarking, it needs 10 GB)
-        for i in {0..9}; 
-        do 
-            z=$((90000000+i*1000))
-            cmd=$(./example_mt_bench_disk 10.52.3.173@tcp:12345:34:1 10.52.3.173@tcp:12345:33:1000  "<0x7000000000000001:0>" "<0x7200000000000001:64>" $z 1 0 0 1 1000)
-            echo $cmd
-        done
+        #Write Request 
+            #below code write 40 MB for test only; if real benchmarking, it needs 10 GB (by changing "0..9" to "0..2621440"-> takes > 6 hours)
+            
+            for i in {0..9}; 
+            do 
+                z=$((90000000+i*1000))
+                cmd=$(./example_mt_bench_disk 10.52.3.173@tcp:12345:34:1 10.52.3.173@tcp:12345:33:1000  "<0x7000000000000001:0>" "<0x7200000000000001:64>" $z 1 0 0 1 1000)
+                echo $cmd
+            done
 
-        #Read request
-                                HA_ADDR LOCAL_ADDR Profile_fid Process_fid(m0_client's fid) obj_id write read delete layout_id n_thread_sema
-        ./example_mt_bench_disk 10.52.3.173@tcp:12345:34:1 10.52.3.173@tcp:12345:33:1000  "<0x7000000000000001:0>" "<0x7200000000000001:64>" 90000000 0 1 0 1 1
+            #Read request
+                                    HA_ADDR LOCAL_ADDR Profile_fid Process_fid(m0_client's fid) obj_id write read delete layout_id n_thread_sema
+            ./example_mt_bench_disk 10.52.3.173@tcp:12345:34:1 10.52.3.173@tcp:12345:33:1000  "<0x7000000000000001:0>" "<0x7200000000000001:64>" 90000000 0 1 0 1 1
 
-    3.2 In-memory
+    3.2 In-memory benchmarking
         cd /mnt/extra/cortx-motr/motr/examples
         zsh
         sudo su
@@ -307,7 +305,7 @@
                 result1 = m0_time_now(); //record the entry time
 
                 //Function
-                
+
                 result2 = m0_time_now(); //record the leave time
                 M0_LOG(M0_INFO, "[m0_op_wait] %"PRIu64" %"PRIu64, resultt1, resultt2); //print to log file 
 
@@ -349,6 +347,15 @@
 
 
 
+
+
+0. Update to Github 
+     cd ~/Documents/GIK/cortx-motr-new/
+     git add . #(untuk semua folder)
+     git commit -m "add cortx-motr"
+     git remote add origin https://github.com/fandiazam/cortx-motr-new.git #git remote remove origin 
+     git push -u origin main
+     git push origin main 
 
 
 

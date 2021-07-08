@@ -742,7 +742,7 @@ int main(int argc, char *argv[])
     sem_destroy(&n_thread_semaphore);
     m0_client_fini(m0_instance, true);
     
-    char *filename = "sum_latency.txt";
+    char *filename = "sum_latency_memory.txt";
     FILE *fp = fopen(filename, "w");
     // open the file for writing
     if (fp == NULL)
