@@ -87,7 +87,10 @@ void disk_read (char *filename, int threads, int block_size){
     int max_offset;
 
 	int fd ;
-    
+
+    char *file = "OS_sum_latency_disk_us.txt";
+    // open the file for writing
+    FILE *fp = fopen(file, "w");
     for (; i < threads; i++)
     {
         system("sync; echo 3 > /proc/sys/vm/drop_caches && swapoff -a && swapon -a");
@@ -109,9 +112,10 @@ void disk_read (char *filename, int threads, int block_size){
         ret = pread64(fd, buf, count, offset);
         gettimeofday(&end, NULL);
         total_latency += ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
+        fprintf(fp, "%.0f\n", total_latency);
     //printf("%s\n", buf );
     }
-    
+    fclose(fp);
     printf("\n####### Reading process on-disk#######");
     printf("\nReading %s...",filename);
     printf("\n==========================");
@@ -169,12 +173,21 @@ void memory_read (char *filename, int threads, int block_size){
 float avg_latency (float arrof_latency[], int threads){
     int i;
     float sum =0.0, avg;
-    for (i = 1; i < threads; i++)
-    {
-        sum+=arrof_latency[i];
-    }
-    avg = sum/(threads-1);
+    //a=1 -> disk
+    //a=0 -> memory
+    char *file = "OS_sum_latency_memory_us.txt";
+    // open the file for writing
+    FILE *fp = fopen(file, "w");
 
+    /* Get the average latency */
+    for (i = 1; i < threads; i++)
+        {
+            sum+=arrof_latency[i];
+            fprintf(fp, "%.3f\n", arrof_latency[i]);
+        }
+        avg = sum/(threads-1);
+    // close the file
+    fclose(fp);
     return avg ;
 }
 

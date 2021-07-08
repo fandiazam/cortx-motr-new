@@ -221,7 +221,13 @@
 2. OS benchmarking
     2.1 On-disk & In-memory
         #Generate large file/dataset ->10 GB
-            dd if=/dev/urandom of=10GB.txt bs=1073741824 count=10
+            #dd if=/dev/urandom of=10GB.txt bs=1073741824 count=10
+            while true;do head /dev/urandom | tr -dc A-Za-z0-9;done | head -c 1073741824 | tee  1GB.txt
+
+            for i in {1..10}; 
+                do cat 1GB.txt >> 10GB.txt
+            done
+            rm -f 1GB.txt
         #RUN
         cd mnt/extra/cortx-motr/OS_benchmarking/
 
@@ -361,7 +367,7 @@
 
 
 
-
+scp /Users/fandi/Documents/GIK/cortx-motr-new/OS_benchmarking/OS_bench.c 129.114.109.247:/mnt/extra/OS_bench.c
 
 
 
